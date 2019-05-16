@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>格式化数据(用于表单提交)</title>
+  </head>
+  <body>
+    <div id="vue">
+      <input
+        type="text"
+        placeholder="请输入"
+        :value="semicolon"
+        @input="formatNumber"
+      />
+    </div>
+    <script src="../js/vue.min.js"></script>
+    <script>
+      const vm = new Vue({
+        el: "#vue",
+        data: {
+          value: 122223
+        },
+        computed: {
+          // 把数字变成千分位
+          semicolon() {
+            if (Number(this.value) === 0) {
+              return 0;
+            }
+            if (!this.value) {
+              return (this.data = "");
+            }
+            if (this.value === "NaN") {
+              return (this.data = "");
+            }
+            if (`${this.value}`.split(".").length > 1) {
+              return (this.value = `${this.value}`.replace(
+                /(\d)(?=(\d{3})+\.)/g,
+                "$1,"
+              ));
+            }
+            return (this.value = `${this.value}`.replace(
+              /\B(?=(\d{3})+(?!\d))/g,
+              ","
+            ));
+          }
+        },
+        methods: {
+          // 将千分符的数字 转为没有.的样子
+          formatNumber(e) {
+            const value = e.target.value;
+            // 清空非数字和点的字符
+            const numValue = `${value}`.replace(/[^0-9.]/g, "");
+            // 清空多余的点
+            const numValueArr = numValue.split(".");
+            const result =
+              numValueArr.length > 1
+                ? `${numValueArr[0]}.${numValueArr[1]}`
+                : numValueArr[0];
+            // 返回不含的千分符格式
+            this.value = Number(result);
+            return result;
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
