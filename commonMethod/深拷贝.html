@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>深拷贝</title>
+  </head>
+  <body>
+    <h3>
+      Object.assgin(),
+      数组的slice()这些，这些只深复制了基本类型数据类型，不是真正意义的深复制
+      var target = {}; var source = {name:"tzalwayslove"}
+      Object.assign(target,source);
+    </h3>
+    <script>
+      //   浅拷贝   object2的arr属性和object1的arr属性在内存中指向同一个地址，这显然是浅拷贝
+      const obj1 = {
+        name: "tzalwayslove",
+        arr: [1, 2, 3]
+      };
+
+      function shallowCopy(o) {
+        let object2 = {};
+        for (let i in o) {
+          if (o.hasOwnProperty(i)) {
+            object2[i] = o[i];
+          }
+        }
+        return object2;
+      }
+    </script>
+    <script>
+      // 深拷贝
+      function deepCopy(p, c) {
+        var c = c || {};
+        for (var i in p) {
+          // 如果是引用类型
+          if (typeof p[i] === "object") {
+            //   判断是数组还是对象
+            c[i] = p[i].constructor === Array ? [] : {};
+            // 进行递归
+            deepCopy(p[i], c[i]);
+          } else {
+            c[i] = p[i];
+          }
+        }
+        return c;
+      }
+    </script>
+  </body>
+</html>

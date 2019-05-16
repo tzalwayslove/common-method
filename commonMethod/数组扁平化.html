@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>数组扁平化</title>
+  </head>
+  <body>
+    <h3>数组扁平化概念</h3>
+    <p>数组扁平化是指将一个多维数组变为一维数组</p>
+    <p>[1, [2, 3, [4, 5]]] ------> [1, 2, 3, 4, 5]</p>
+    <script>
+      // 1.reduce  遍历数组每一项，若值为数组则递归遍历，否则concat。
+      function flatten(arr) {
+        return arr.reduce((result, item) => {
+          return result.concat(Array.isArray(item) ? flatten(item) : item);
+        }, []);
+      }
+
+      //   reduce是数组的一种方法，它接收一个函数作为累加器，数组中的每个值（从左到右）开始缩减，最终计算为一个值。
+
+      //   2. toString & split 调用数组的toString方法，将数组变为字符串然后再用split分割还原为数组
+      function flatten(arr) {
+        return arr
+          .toString()
+          .split(",")
+          .map(function(item) {
+            return Number(item);
+          });
+      }
+
+      //   3  join & split join也可以将数组转换为字符串
+
+      function flatten(arr) {
+        console.log(arr.join(","));
+        return arr
+          .join(",")
+          .split(",")
+          .map(function(item) {
+            return parseInt(item);
+          });
+      }
+
+      //    递归
+      function flatten(arr) {
+        var res = [];
+        arr.map(item => {
+          if (Array.isArray(item)) {
+            res = res.concat(flatten(item));
+          } else {
+            res.push(item);
+          }
+        });
+        return res;
+      }
+
+      //   结构赋值
+      [].concat(...[1, 2, 3, [4, 5]]); // [1, 2, 3, 4, 5]
+      function flatten(arr) {
+        while (arr.some(item => Array.isArray(item))) {
+          arr = [].concat(...arr);
+        }
+        return arr;
+      }
+    </script>
+  </body>
+</html>
