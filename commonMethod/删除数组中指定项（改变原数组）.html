@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>删除数组中指定项（改变原数组）</title>
+  </head>
+  <body>
+    <script>
+      // 反向遍历 避免删除后的位置问题
+      function removeWithoutCopy(arr, item) {
+        for (var i = arr.length - 1; i >= 0; i--) {
+          if (arr[i] === item) {
+            arr.splice(i, 1);
+          }
+        }
+        return arr;
+      }
+    </script>
+  </body>
+</html>

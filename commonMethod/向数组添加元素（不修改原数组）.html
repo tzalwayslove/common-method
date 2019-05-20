@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>不要直接修改数组 arr 末尾添加元素 item</title>
+  </head>
+  <body>
+    <script>
+      // 愚蠢做法
+      function append(arr, item) {
+        var newArr = [];
+        for (i = arr.length - 1; i >= 0; i--) {
+          newArr[i] = arr[i];
+        }
+        newArr[newArr.length] = item;
+        return newArr;
+      }
+      /**
+       * 使用slice浅拷贝+push组合
+       * @param arr
+       * @param item
+       * @returns {Blob|ArrayBuffer|Array.<T>|string}
+       */
+      var append2 = function(arr, item) {
+        var newArr = arr.slice(0); // slice(start, end)浅拷贝数组
+        newArr.push(item);
+        return newArr;
+      };
+      /**
+       * 使用concat将传入的数组或非数组值与原数组合并,组成一个新的数组并返回
+       * @param arr
+       * @param item
+       * @returns {Array.<T>|string}
+       */
+      var append3 = function(arr, item) {
+        return arr.concat(item);
+      };
+    </script>
+  </body>
+</html>
