@@ -1,92 +1,127 @@
-Promise是一个构造函数，函数中含all、reject、resolve方法，原型上有then、catch方法。
-最简单的例子
-const test = new Promise(function(resolve, reject){
-    //做一些异步操作
-    setTimeout(function(){
-        console.log('执行完成');
-        resolve('测试用例');
-    }, 2000);
-});
-简单讲解  promise 接收一个函数参数，并且该函数自带resolve和reject两个参数，用于回调完成的操作。
-其中resolve是将Promise的状态置为fullfiled，reject是将Promise的状态置为rejected。
+旧的生命周期函数中
+Mounting（加载阶段：涉及 6 个钩子函数）
 
-在项目开发中 首先会登录然后做一些操作例如
-login()=>{
-    return new Promise(resolve=>{
-        http.get(url,res=>{
-            resolve(res)
-        })
-    })
+1.constructor()
+加载的时候调用一次，可以初始化 state
+
+2.getDefaultProps()
+设置默认的 props，也可以用 dufaultProps 设置组件的默认属性。
+
+3.getInitialState()
+初始化 state，可以直接在 constructor 中定义 this.state
+
+4.componentWillMount()
+组件加载时只调用，以后组件更新不调用，整个生命周期只调用一次，此时可以修state
+
+5.render()
+react 最重要的步骤，创建虚拟 dom，进行 diff 算法，更新 dom 树都在此进行
+
+6.componentDidMount()
+组件渲染之后调用，只调用一次
+
+
+Updating（更新阶段：涉及5个钩子函数)
+1.componentWillReceivePorps(nextProps)
+组件加载时不调用，组件接受新的props时调用
+
+2.shouldComponentUpdate(nextProps, nextState)
+组件接收到新的props或者state时调用，return true就会更新dom（使用diff算法更新），return false能阻止更新（不调用render）
+
+3.componentWillUpdata(nextProps, nextState)
+组件加载时不调用，只有在组件将要更新时才调用，此时可以修改state
+
+4.render()
+react最重要的步骤，创建虚拟dom，进行diff算法，更新dom树都在此进行
+
+5.componentDidUpdate()
+组件加载时不调用，组件更新完成后调用
+
+Unmounting（卸载阶段：涉及1个钩子函数）
+1.componentWillUnmount()
+组件渲染之后调用，只调用一次
+
+
+-------------------------分割线------------------------------------
+
+在react更新至react16时 对原来的生命周期进行了更新 现在的生命周期如下
+Mounting（加载阶段：涉及4个钩子函数）
+1.constructor()
+加载的时候调用一次，可以初始化state
+
+2.static getDerivedStateFromProps(props, state)
+组件每次被rerender的时候，包括在组件构建之后(虚拟dom之后，实际dom挂载之前)，每次获取新的props或state之后；每次接收新的props之后都会返回一个对象作为新的state，返回null则说明不需要更新state；配合componentDidUpdate，可以覆盖componentWillReceiveProps的所有用法
+
+3.render()
+react最重要的步骤，创建虚拟dom，进行diff算法，更新dom树都在此进行
+
+4.componentDidMount()
+组件渲染之后调用，只调用一次
+
+Updating（更新阶段：涉及5个钩子函数)
+1.static getDerivedStateFromProps(props, state)
+组件每次被rerender的时候，包括在组件构建之后(虚拟dom之后，实际dom挂载之前)，每次获取新的props或state之后；每次接收新的props之后都会返回一个对象作为新的state，返回null则说明不需要更新state；配合componentDidUpdate，可以覆盖componentWillReceiveProps的所有用法
+
+2.shouldComponentUpdate(nextProps, nextState)
+组件接收到新的props或者state时调用，return true就会更新dom（使用diff算法更新），return false能阻止更新（不调用render）
+
+3.render()
+react最重要的步骤，创建虚拟dom，进行diff算法，更新dom树都在此进行
+
+4.getSnapshotBeforeUpdate(prevProps, prevState)
+触发时间: update发生的时候，在render之后，在组件dom渲染之前；返回一个值，作为componentDidUpdate的第三个参数；配合componentDidUpdate, 可以覆盖componentWillUpdate的所有用法
+
+5.componentDidUpdate()
+组件加载时不调用，组件更新完成后调用
+
+Unmounting（卸载阶段：涉及1个钩子函数）
+1.componentWillUnmount()
+组件渲染之后调用，只调用一次
+
+Error Handling(错误处理)
+1.componentDidCatch(error，info)
+任何一处的javascript报错会触发
+
+
+
+-----------------------总结--------------------------------------
+1.React16新的生命周期弃用了componentWillMount、componentWillReceivePorps，componentWillUpdate
+2.新增了getDerivedStateFromProps、getSnapshotBeforeUpdate来代替弃用的三个钩子函数（componentWillMount、componentWillReceivePorps，componentWillUpdate）
+3.React16并没有删除这三个钩子函数，但是不能和新增的钩子函数（getDerivedStateFromProps、getSnapshotBeforeUpdate）混用，React17将会删除componentWillMount、componentWillReceivePorps，componentWillUpdate
+4.新增了对错误的处理（componentDidCatch）
+
+
+--------------------------示例用法------------------------------------
+1.static getDerivedStateFromProps()
+
+当本地state需要根据props来改变的时候可调用此方法。
+
+这个方法是在render()前会被执行，只要执行render()都会被在之前被触发。
+
+该方法有两个参数props和state; 返回值为state对象, 不需要返回整体state，把需要改变的state返回即可。
+
+示例：
+
+static getDerivedStateFromProps(props, state) {
+  if(props.color !== state.color) {
+    return {color: props.color};
+  }
 }
-login().then(checkStatus)
-       .then(response => response.json())
-       .then(checkError.bind(null, mode))
-       .catch(err => ({ err }));
-login方法返回一个promise 利用then方法注册在成功时进行回调处理
 
+2.shouldComponentUpdate()
 
-promise在一定程度上解决回调地狱的问题，下面来简单模拟一个promise实现过程
-这个简陋的方法中因为没有状态机制 所以可能会出现resolve比then先执行的情况
-function myPromise(fn){
-    <!-- 首先要定义一个回调数组 作为成功时的执行 -->
-    var callbackArr = []
-    <!-- 调用then方法的时候  其实是将then里的参数方法 放入回调数组中 -->
-    this.then = function (onFulfilled){
-        callbackArr.push(onFulfilled)
-    }
-    <!-- new Promise时会有不同的状态 resolve时会接受一步操作返回的结果-->
-    <!-- resolve方法会把回调数组中的方法一一执行 -->
-     function resolve(value) {
-        callbackArr.forEach(function (callback) {
-            callback(value);
-        });
-    }
+此方法有两个参数：shouldComponentUpdate(nextProps, nextState).
 
-    fn(resolve);
-}
+返回值为true或者false, 默认返回true.
 
-现在添加状态机制 解决上面提到的异步问题
-function myPromise(fn){
-    <!-- 添加等待状态 -->
-    var state = 'pedding'
-    var callbackArr =[]
-    <!-- then返回promise 便于链式遍历-->
-    this.then = function(onFulfilled,onRejected){
-           return new myPromise(function (resolve,reject) {
-            handle({
-                onFulfilled: onFulfilled || null,
-                onRejected:onRejected||null,
-                resolve: resolve,
-                reject: reject
-            });
-        });
-    }
+主要使用它来控制组件要不要渲然，常用作性能优化。
 
-    function handle(callback) {
-        if (state === 'pending') {
-            callbacks.push(callback);
-            return;
-        }
-        //如果then中没有传递任何东西
-        if(!callback.onResolved) {
-            callback.resolve(value);
-            return;
-        }
+触发此方法的条件是：组件接收任意props或者state时都会被调用。需要注意的是在第一次render()时和在调用forceUpdate()时都不会被触发。
 
-        var ret = callback.onFulfilled(value);
-        callback.resolve(ret);
-    }
+示例：
 
-
-     function resolve(newValue) {
-        value = newValue;
-        state = 'fulfilled';
-        setTimeout(function () {
-            callbacks.forEach(function (callback) {
-                callback(value);
-            });
-        }, 0);
-    }
-
-    fn(resolve);
+shouldComponentUpdate(nextProps, nextState) {
+  if(nextProps.color !== this.props.color || nextState.size !== this.state.size) {
+    return true;
+  } 
+  return false;
 }
